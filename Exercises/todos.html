@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>FetchAPI</title>
+    <link rel="stylesheet" href="01.css">
+</head>
+
+<body>
+    <!-- para hacerlo con XHR-RESTAPI se tiene que hacer un onclick en el boton junto a una funcion en el script -->
+    <input id="btnBuscar" type="button" value="Mostrar tabla" onclick="consultaUsuario()">
+
+    <table id="mytable">
+        <tr>
+            <td>Id</td>
+            <td>Title</td>
+            <td>Completed</td>
+        </tr>
+
+    </table>
+    <!-- <link rel="stylesheet" href="01.css" type="text/css" /> -->
+
+    <!-- <button id="btn1">Search Id</button> -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <!-- referencia a la libreria (necesita el jQuery) si se quita no funciona el ajax-->
+
+    <script>
+        var listNotas = document.getElementById("mytable");
+        var newItem = document.createElement('tr');
+        function consultaUsuario() {
+          //  alert('si entra')
+          while (listNotas.firstChild)
+            listNotas.removeChild(listNotas.firstChild);
+            fetch(`https://jsonplaceholder.typicode.com/todos`)
+                .then(
+                    response => {
+                        // si no sale bien arroja una exepcion
+                        if (!response.ok) throw Error(response.status); // aqui evaluamos la respuesta si esta bien continua 
+                        return response.json();
+                    }
+                )  // lo obtenermos en una variable response el . json es para indicar que lo queremos en formato json
+                .then(todos => {
+                    todos.forEach((todo) => {
+                        let nuevaNota = document.createElement("tr");
+                      //  console.log(todo.id);
+                        //   nuevaNota.innerHTML = `Titulo: ${todo.title} Contenido: ${todo.content}`;
+                        nuevaNota.innerHTML = ` 
+                            <td> id: ${todo.id}  </td> <td> Title: ${todo.title}  </td>  <td>  Completado: ${todo.completed}  </td>  `;
+                        listNotas.appendChild(nuevaNota)
+
+                    });
+                    $(() => {//:eq(2) es un equal selector indica que solo se lo aplica al elemento 2 y no a los tres elementos(0,1,2)
+
+                        // ["Hamlet", "Henry IV, Part I", "History", "Henry V", "History"]
+                       // $('tr:even').addClass('alt'); // lo aplica para los nones nota: lo numera apartir del 0 el cero es considerado par
+                        $('tr') // lo que define que lo hara sobre el td es este punto 'td'
+                            .each((i, td) => { // para cada td la variable td puede ser gato
+                                console.log(`Valor de i : ${i}`);
+                                console.log(`Contenido de td : ${td.textContent}`);
+                                $('tr:contains(true)').addClass('completado').addClass('alt') // Add the "highlight" class
+                                $('tr:contains(false)').addClass('nocompletado')// Add the "highlight" class
+
+                                // if (td.textContent.startsWith('Completado: true')) { // lo meto a una condicion if que el contexto inicia con H
+                                //     td.setAttribute('class', 'completado');
+                                // }
+                                // else  { // lo meto a una condicion if que el contexto inicia con H
+                                //     td.setAttribute('class', 'nocompletado');
+                                // }
+
+                            });
+                        // $('td:nth-child(3)').css('color', 'yellow'); // el primer hijo del padre recibira el cambio el primer td
+                    });
+
+
+
+                }); // aqui termina el then todos
+
+        }
+
+
+    </script>
+</body>
+
+</html>

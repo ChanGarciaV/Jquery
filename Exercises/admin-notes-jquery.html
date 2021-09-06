@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>FetchAPI</title>
+    <link rel="stylesheet" href="./jquery-form-validation.css" type="text/css">
+</head>
+
+<body>
+    <form id="form-id" method="post">
+        <ul>
+            <li>
+                <label for="title">Title:</label>
+                <input type="text" id="title" name="user_name">
+            </li>
+            <li>
+                <label for="content">Content:</label>
+                <input type="email" id="content" name="user_email">
+            </li>
+            <li class="button">
+                <button id="btn-send" type="submit">Crear nota</button>
+                <a></a>
+            </li>
+        </ul>
+    </form>
+
+    <!-- para hacerlo con XHR-RESTAPI se tiene que hacer un onclick en el boton junto a una funcion en el script -->
+    <input id="btnBuscar" type="button" value="Mostrar valores del servidor" onclick="consultaUsuario()">
+
+    <table id="mytable">
+        <tr>
+            <td>Id</td>
+            <td>Title</td>
+            <td>Content</td>
+        </tr>
+
+    </table>
+    <!-- <link rel="stylesheet" href="01.css" type="text/css" /> -->
+
+    <!-- <button id="btn1">Search Id</button> -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <!-- referencia a la libreria (necesita el jQuery) si se quita no funciona el ajax-->
+
+    <script>
+
+        // aqui llamo el boton
+
+        $(() => {
+
+            $('#btn-send').click((event) => {
+                //alert('Google');
+                CrearNota();
+                event.preventDefault(); // que no se vaya a hacer lo esperado (comportamiento default (navegacion de la liga))
+            });
+
+        });
+        // aqui se va a realizar el post para realizar un post
+        function CrearNota() {
+            let title1 = $("#title").val();
+            let content1 = $("#content").val();
+            console.log(title1); // obtengo el contenido del titulo 
+            console.log(content1); // obtengo el contenido del content
+
+            // ahora puedo hacer el post
+
+            fetch(`http://localhost:3000/notes`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    title: `${title1}`,
+                    content: `${content1}`
+                }),
+                headers: {
+                    "Content-type": "application/json"
+                }
+
+            })
+                .then(response => response.json())
+                .then(json => console.log(json))
+            console.log(`mando un post con el title: ${title1} y content: ${content1} exitosamente`);
+            consultaUsuario();
+
+
+        }
+
+
+        var listNotas = document.getElementById("mytable");
+        var newItem = document.createElement('tr');
+        function consultaUsuario() {
+            //  alert('si entra')
+            while (listNotas.firstChild)
+                listNotas.removeChild(listNotas.firstChild);
+            fetch(`http://localhost:3000/notes`)
+                .then(
+                    response => {
+                        // si no sale bien arroja una exepcion
+                        if (!response.ok) throw Error(response.status); // aqui evaluamos la respuesta si esta bien continua 
+                        return response.json();
+                    }
+                )  // lo obtenermos en una variable response el . json es para indicar que lo queremos en formato json
+                .then(notes => {
+                    notes.forEach((note) => {
+                        let nuevaNota = document.createElement("tr");
+                        //  console.log(todo.id);
+                        //   nuevaNota.innerHTML = `Titulo: ${todo.title} Contenido: ${todo.content}`;
+                        nuevaNota.innerHTML = ` 
+                            <td> id: ${note._id}  </td> <td> title: ${note.title}  </td> <td> Title: ${note.content}  </td>
+                            <td> <a href="#" noteId = ${note._id} class="update"> Modificar </a> &nbsp;  &nbsp; 
+                                 <a href="#" noteId = ${note._id} class="delete"> Eliminar </a> </td> `; //<a></a>
+                        listNotas.appendChild(nuevaNota)
+
+                    });
+                    $(() => {//:eq(2) es un equal selector indica que solo se lo aplica al elemento 2 y no a los tres elementos(0,1,2)
+
+                        // ["Hamlet", "Henry IV, Part I", "History", "Henry V", "History"]
+                        // $('tr:even').addClass('alt'); // lo aplica para los nones nota: lo numera apartir del 0 el cero es considerado par
+                        $('tr') // lo que define que lo hara sobre el td es este punto 'td'
+                            .each((i, td) => { // para cada td la variable td puede ser gato
+                                console.log(`Valor de i : ${i}`);
+                                console.log(`Contenido de td : ${td.textContent}`);
+                                $('tr:contains(true)').addClass('completado').addClass('alt') // Add the "highlight" class
+                                $('tr:contains(false)').addClass('nocompletado')// Add the "highlight" class
+
+                                // if (td.textContent.startsWith('Completado: true')) { // lo meto a una condicion if que el contexto inicia con H
+                                //     td.setAttribute('class', 'completado');
+                                // }
+                                // else  { // lo meto a una condicion if que el contexto inicia con H
+                                //     td.setAttribute('class', 'nocompletado');
+                                // }
+
+                            });
+                        $('a.update')
+                            .click(function (event) {
+                                event.preventDefault();
+                                let id_update = $(this).attr('noteId');
+                                console.log("se obtiene el id con el delete " + id_update);
+                                let valor1 = prompt("Ingresa el titulo");
+                                let valor2 = prompt("Ingresa el contenido");
+                                console.log("title: " + valor1);
+                                console.log("content:  " + valor2);
+                                //alert("update");
+                                // aqui tengo que meter el put
+                                fetch(`http://localhost:3000/notes/${id_update}`, {
+                                    method: 'PUT',
+                                    body: JSON.stringify({
+                                        title: `${valor1}`,
+                                        content: `${valor2}`
+                                    }),
+                                    headers: {
+                                        "Content-type": "application/json"
+                                    }
+
+                                })
+                                    .then(response => response.json())
+                                    .then(json => {
+                                        console.log(json)
+                                        console.log(`mando un put con el title: ${valor1} y content: ${valor2} exitosamente`)
+                                        consultaUsuario();
+                                    })
+                                console.log(`mando un put con el title: ${valor1} y content: ${valor2} exitosamente`)
+                                //consultaUsuario();
+                                //termina el put
+
+
+                            });
+
+                        $('a.delete')
+                            .click(function (event) {
+                                event.preventDefault();
+                                let id_delete = $(this).attr('noteId'); // con expresiones arrow tiene que ser e.target.attr
+                                console.log("se obtiene el id con el delete " + id_delete);
+                                // alert("delete");
+
+                                // aqui tengo que hacer el delete
+                                fetch(`http://localhost:3000/notes/${id_delete}`, {
+                                    method: 'DELETE',
+
+                                    headers: {
+                                        "Content-type": "application/json"
+                                    }
+
+                                })
+                                    .then(response => response.json())
+                                    .then(json => {
+                                        console.log(json)
+                                        console.log(`mando elimino el id ${id_delete} exitosamente`)
+                                        consultaUsuario();
+                                    })
+
+
+                                // termina el delete
+
+
+                            });
+
+                        // $('td:nth-child(3)').css('color', 'yellow'); // el primer hijo del padre recibira el cambio el primer td
+                    });
+
+
+
+                }); // aqui termina el then todos
+
+        }
+
+
+    </script>
+</body>
+
+</html>

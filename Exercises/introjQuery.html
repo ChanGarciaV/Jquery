@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>JQuery</title>
+</head>
+
+<body>
+
+    <p id="parrafo1"> Este es un parrafo de HTML</p>
+
+    <!-- <script src="./libs/jquery-3.6.0.js"></script> -->
+    <!-- El codigo que utiliza j queri tiene que ir despues de referencia la libreria -->
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script> -->
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <!-- solo se necesita una de las librerias puede tomarse online o puede tomarse de forma local al descargarlo -->
+    <!-- puede ser desde google o bien desde code.jquery.com -->
+    <script>
+
+        $(document).ready(function(){ // hasta que se carge ya se pueden usar las funciones
+            $("#parrafo1").click(function(){
+               $(this).hide(); // se escunde al mometo de hacer click sobre el parrafo
+            });
+        });
+    
+    </script>
+
+
+
+   
+
+</body>
+
+</html>

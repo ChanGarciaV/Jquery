@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>JQuery-dom-attribute</title>
+</head>
+
+<body>
+
+    <p id="parrafo1" clave="123"> Este es un parrafo de HTML</p>
+    <p id="parrafo2" clave="345"> Este es un parrafo de HTML</p>
+    <p id="parrafo3" clave="678"> Este es un parrafo de HTML</p>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script>
+        $(() => {
+            alert($('#parrafo1')[0].getAttribute("clave"));
+           // alert($('p')[0].getAttribute("clave"));
+
+
+        });
+
+
+    </script>
+
+
+
+
+
+</body>
+
+</html>
